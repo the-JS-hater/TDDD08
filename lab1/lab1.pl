@@ -1,4 +1,4 @@
-% Facts
+% Factsppy
 
 beautiful(ulrika).
 beautiful(peter).

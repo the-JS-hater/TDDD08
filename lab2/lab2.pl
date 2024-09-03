@@ -3,8 +3,7 @@ issorted([]).
 issorted([A]).
 
 % Recursivley sort in ascending order
-issorted([X1 | T]) :-
-  T = [X2 | T1],
+issorted([X1, X2 | T]) :-
   X2 >= X1,
   issorted(T).
 
@@ -41,24 +40,27 @@ remove(X, [H | T], [H | T1]) :-
   H \= X, 
   remove(X, T, T1).
 
-% Base case for quicksort
+% Base cases for quicksort
 qsort([], []).
+qsort([X], [X]).
 
 qsort([H | T], L1) :-
   partition(T, H, Small, Large),
   qsort(Small, Small2),
   qsort(Large, Large2),
-  append(Small2, Large2, L1).
+  append(Small2, [H], L2),
+  append(L2, Large2, L1).
 
-partition([], N, [], []).
+partition([], N, Small, Large).
 
-partition([H | T], N, [H | L1], L2) :-
+partition([H | T], N, Small, Large) :-
   H < N,
-  partition(T, N, L1, L2).
+  partition(T, N, Small2, Large),
+  append([H], Small2, Small).
 
-partition([H | T], N, L1, [H | L2]) :-
+partition([H | T], N, Small, Large) :-
   H >= N,
-  partition(T, N, L1, L2).
+  partition(T, N, Small, Large1),
+  append([H], Large1, Large).
 
-%:- initialization ssort([4,3,2,2,1,2], S).
-%:- initialization Writeln(S).
+%:- initialization findall(ssort([-7, 3, -2, 5, 5, 7, -1, 10], T), writeln(T)).
