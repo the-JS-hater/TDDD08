@@ -14,15 +14,21 @@ ssort([], []).
 % selection sort
 ssort(L, L1) :-
   smallest(L, X),
-  remove(X, L),
-  ssort(L, L1),
-  append([X], L1, L2).
+  remove(X, L, L2),
+  ssort(L2, LS),
+  append([X], LS, L1).
+
 
 % collect smallest element of a list
-smallest([X1, X2 | T], X1) :-
-  X1 < X2,
-  smallest(T, Y),
-  X1 < Y.
+smallest([X], X).
+
+smallest([H, H1 | T], S) :-
+  H1 >= H,
+  smallest([H | T], S).
+
+smallest([H, H1 | T], S) :-
+  H >= H1,
+  smallest([H1 | T], S).
 
 % remove from empty list
 remove(X, [], []).
@@ -54,3 +60,5 @@ partition([H | T], N, L1, [H | L2]) :-
   H >= N,
   partition(T, N, L1, L2).
 
+%:- initialization ssort([4,3,2,2,1,2], S).
+%:- initialization Writeln(S).

@@ -13,6 +13,7 @@ woman(ulrika).
 woman(anne).
 
 % graph
+
 edge(a, b).
 edge(a, c).
 edge(b, c).
