@@ -30,23 +30,24 @@ evalExpr(A, /, B, Res) :- Res is A / B.
 evalExpr(A, *, B, Res) :- Res is A * B.
 
 
-execCommand(skip).
+execCommand([skip], _).
 
-% I assume global state of the program needs to be passed in here?
-execCommand(set, I, E).
+execCommand([set, I, E], State).
 
-% Presumablt we will need one for when B is true, and one when false
-execCommand(if, B, TrueBranch, FalseBranch).
+execCommand([if, B, TrueBranch, FalseBranch], _).
   evalBoolExpr(B, Res),
   Res == tt,
   execCommand(TrueBranch).
   
+execCommand([if, B, TrueBranch, FalseBranch], _).
+  evalBoolExpr(B, Res),
+  Res == ff,
+  execCommand(FalseBranch).
 
-execCommand(if, B, C, C).
-  
+execCommand([while, B, C], State).
 
-execCommand(while, B, C).
-
-execCommand(seq, C, C).
+execCommand([seq, C, C1], State).
+  execCommand(C),
+  execCommand(C1).
 
 execute(InitialState, Program, FinalState).
