@@ -24,17 +24,26 @@ evalBoolExpr(E, >=, E).
 
 evalExpr(id, Val, Val).
 evalExpr(num, N, N).
-evalExpr(A, +, B, Res) :- plus(A, B, Res).
-evalExpr(A, -, B, Res) :- plus(A, B, Res).
-evalExpr(A, /, B, Res) :- plus(A, B, Res).
-evalExpr(A, *, B, Res) :- plus(A, B, Res).
+evalExpr(A, +, B, Res) :- Res is A + B.
+evalExpr(A, -, B, Res) :- Res is A - B.
+evalExpr(A, /, B, Res) :- Res is A / B.
+evalExpr(A, *, B, Res) :- Res is A * B.
 
 
 execCommand(skip).
 
+% I assume global state of the program needs to be passed in here?
 execCommand(set, I, E).
 
+% Presumablt we will need one for when B is true, and one when false
+execCommand(if, B, TrueBranch, FalseBranch).
+  evalBoolExpr(B, Res),
+  Res == tt,
+  execCommand(TrueBranch).
+  
+
 execCommand(if, B, C, C).
+  
 
 execCommand(while, B, C).
 
