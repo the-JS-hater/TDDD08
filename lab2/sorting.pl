@@ -63,4 +63,4 @@ partition([H | T], N, Small, Large) :-
   partition(T, N, Small, Large1),
   append([H], Large1, Large).
 
-%:- initialization findall(ssort([-7, 3, -2, 5, 5, 7, -1, 10], T), writeln(T)).
+%:- initialization forall(qsort([-7, 3, -2, 5, 5, 7, -1, 10], T), writeln(T)).
