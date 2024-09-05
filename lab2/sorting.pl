@@ -51,7 +51,7 @@ qsort([H | T], L1) :-
   append(Small2, [H], L2),
   append(L2, Large2, L1).
 
-partition([], N, Small, Large).
+partition([], N, [], []).
 
 partition([H | T], N, Small, Large) :-
   H < N,
