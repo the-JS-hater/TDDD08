@@ -45,7 +45,7 @@ evalBoolExpr(State, A>B, ff) :-
   evalExpr(State, B, RightRes),
   RightRes >= LeftRes.
 
-evalExpr(State, I, Value) :- member([I, Value], State).
+evalExpr(State, I, Value) :- member(I=Value, State).
 evalExpr(State, N, N) :- num(N).
 
 evalExpr(State, A+B, Res) :- 
@@ -68,29 +68,32 @@ evalExpr(State, A*B, Res) :-
   evalExpr(State, B, Bvalue),
   Res is Avalue * Bvalue.
 
-execute(State, skip, State).
-execute(State, set(I, E), NewState)) :-
-  notExists(State, I),
-  append([State, [I, E], NewState]).
-
-execute(State, set(I, E), NewState) :-
-  exists(State, I),
-  replace(State, I, E, NewState).
 
 notExists([], I).
-notExists([H, _ | T], I) :-
+notExists([H=_ | T], I) :-
   H \= I,
   notExists(T, I).
 
 exists(State, I) :-
-  member([I, _], State).
+  member(I=_, State).
 
-replace([H, _ | T], I, E, NewState) :-
+replace([H=_ | T], I, E, NewState) :-
   H \= I,
   replace(T, I, E, NewState).
 
-replace([H, _| T], I, E, [H, E | T]) :-
+replace([H=_| T], I, E, [H=E | T]) :-
   H == I.
+
+execute(State, skip, State).
+
+execute(State, set(I, E), NewState) :-
+  notExists(State, I),
+  evalExpr(State, E, ExprEvaluation),
+  append(State, [I=ExprEvaluation], NewState).
+
+execute(State, set(I, E), NewState) :-
+  exists(State, I),
+  replace(State, I, E, NewState).
 
 execute(State, if(Condition, TrueBranch, FalseBranch), NewState) :-
   evalBoolExpr(State, Condition, Res),
@@ -116,3 +119,4 @@ execute(State, seq(C, C1), NewState) :-
   execute(State, C, InbetweenState),
   execute(InbetweenState, C1, NewState).
 
+:- initialization forall(execute([x=3], seq(set(y,num(1)), while(id(x)>num(1), seq(set(y, id(y)*id(x)), set(x, id(x)-num(1))))), FinalState), writeln(FinalState)). 
