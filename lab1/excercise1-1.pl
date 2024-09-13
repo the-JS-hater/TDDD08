@@ -1,3 +1,7 @@
+% General NOTE: recursive cases are always at the end of functions
+% Otherwise certain recursive queries run the risk of never terminating
+
+
 % Facts (Terms)
 
 beautiful(ulrika).
