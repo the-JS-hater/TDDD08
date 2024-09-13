@@ -29,7 +29,7 @@ evalBoolExpr(State, A==B, tt) :-
 evalBoolExpr(State, A==B, ff) :-
   evalExpr(State, A, LeftRes),
   evalExpr(State, B, RightRes),
-  LeftRes \= RightRes.
+  dif(LeftRes, RightRes).
 
 % evaluate < when it results in true(tt)
 evalBoolExpr(State, A<B, tt) :-

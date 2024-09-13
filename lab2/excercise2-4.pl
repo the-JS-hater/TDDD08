@@ -1,25 +1,44 @@
-% union/3
-union([], _, []).
-union([H | T], Set2, UnionSet) :-
-  member(H, Set2),
-  nonmember(H, UnionSet),
-  union(T, Set2, SubUnionSet),
-  append([H], SubUnionSet, UnionSet).
-
-union([H | T], Set2, UnionSet) :-
-  nonmember(H, Set2),
-  union(T, Set2, SubUnionSet),
-  append([], SubUnionSet, UnionSet).
-
-nonmember(V, []).
-nonmember(V, [H | T]) :-
-  V \= H,
-  nonmember(V, T).
-
 % intersection/3
 
+intersection([], _, []).
 
+intersection([H | T], [H | T1], [H | SubIntersection]) :-
+  intersection(T, T1, SubIntersection).
+
+intersection([H | T], [H1 | T1], Intersection) :-
+  H @< H1,
+  intersection(T, [H1 | T1], Intersection).
+
+intersection([H | T], [H1 | T1], Intersection) :-
+  H @> H1,
+  intersection([H | T], T1, Intersection).
+  
+% union/3
+
+union([], S, S).
+
+union([H | T], [H1 | T1], [H | S]) :-
+  H @< H1,
+  union(T, [H1 | T1], S).
+
+union([H | T], [H1 | T1], [H1 | S]) :-
+  H1 @< H,
+  union([H | T], T1, S).
+
+union([H | T], [H | T1], [H | S]) :-
+  union(T, T1, S).
 
 % powerset/2
 
+powerset([], [[]]).
 
+powerset([X], [[X]]).
+
+powerset([H | T], TODO) :-
+  combinationCreator(H, T, Result),
+
+
+combinationCreator(_, [], []).
+
+combinationCreator([H], [H1 | T], [H, Combs]) :-
+  combinationCreator([H, H1], T, Combs).

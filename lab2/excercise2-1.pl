@@ -41,7 +41,7 @@ remove(X, [X | T], T).
 
 % remove X recursivley when it is in the tail
 remove(X, [H | T], [H | T1]) :- 
-  H \= X, 
+  dif(H, X),
   remove(X, T, T1).
 
 % Base cases for quicksort
