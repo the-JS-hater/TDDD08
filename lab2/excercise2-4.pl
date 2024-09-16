@@ -31,12 +31,15 @@ union([H | T], [H | T1], [H | S]) :-
 % powerset/2
 
 powerset([], [[]]).
+powerset([H | []], [[], [H]]).
 
-powerset([X], [[X]]).
+powerset([H | T], ) :-
+  powerset(T, P),
+  
 
-powerset([H | T], TODO) :-
+powerset([H | T], [Result, MoreResults]) :-
   combinationCreator(H, T, Result),
-
+  powerset(T, MoreResults).
 
 combinationCreator(_, [], []).
 
