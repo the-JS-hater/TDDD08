@@ -16,6 +16,7 @@ intersection([H | T], [H1 | T1], Intersection) :-
 % union/3
 
 union([], S, S).
+union(S, [], S).
 
 union([H | T], [H1 | T1], [H | S]) :-
   H @< H1,
@@ -31,17 +32,30 @@ union([H | T], [H | T1], [H | S]) :-
 % powerset/2
 
 powerset([], [[]]).
-powerset([H | []], [[], [H]]).
 
-powerset([H | T], ) :-
-  powerset(T, P),
-  
+powerset([X], [[], [X]]).
 
-powerset([H | T], [Result, MoreResults]) :-
-  combinationCreator(H, T, Result),
-  powerset(T, MoreResults).
+powerset([H | T], Return) :-
+  subsetCreate([H], T, Subset),
+  append([[H]], Subset, ToBeReturned),
+  powerset(T, P1),
+  append(ToBeReturned, P1, AlmostReturn),
+  removeExcessEmpty(AlmostReturn, Cleaned),
+  append([[]], Cleaned, Return).
 
-combinationCreator(_, [], []).
+subsetCreate(OrigList, [X], [Return]) :-
+  append(OrigList, [X], Return).
 
-combinationCreator([H], [H1 | T], [H, Combs]) :-
-  combinationCreator([H, H1], T, Combs).
+subsetCreate(OriginList, [H | T], [First | Rest]) :- 
+  append(OriginList, [H], First),
+  subsetCreate(First, T, Rest).
+
+removeExcessEmpty([], []).
+
+removeExcessEmpty([H | T], Return) :-
+  H == [],
+  removeExcessEmpty(T, Return).
+
+removeExcessEmpty([H | T], [H | T1]) :-
+  dif(H, []),
+  removeExcessEmpty(T, T1).

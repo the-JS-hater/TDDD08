@@ -1,5 +1,6 @@
 % Base cases for sorted list
 issorted([]).
+
 issorted([A]).
 
 % Recursivley sort in ascending order
