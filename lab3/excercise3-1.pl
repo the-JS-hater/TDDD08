@@ -26,6 +26,38 @@ run(InitialState, String, FinalState) :-
 %<term> ::= <id>
 %| <num>
 
+% DCG =========================
+
+program([Statement]) --> statement(Statement).
+
+program([Statement| Rest]) --> statement(Statement), program(Rest).
+
+statement([skip]) --> [skip].
+
+statement --> [id(Var)], [:=], expression(Expression).
+
+statement --> [if], booleanExpression(Expression), [else], program(Statements), [fi].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % parse/2
 
 parse([Statement | RestStatements], Ast) :-
