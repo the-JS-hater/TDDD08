@@ -95,4 +95,10 @@ removeExcessEmpty([H | T], [H | T1]) :-
 :- writeln("Intersection of [a,b,c] and [b,c,d]").
 :- forall(intersection([a,b,c], [b,c,d], I), writeln(I)).
 :- writeln("Union of [], [a,b,c]").
-:- forall([], )
+:- forall(union([], [a,b,c], U), writeln(U)).
+:- writeln("Union of [a,b,c,d], and [c,d,e,f]").
+:- forall(union([a,b,c,d], [c,d,e,f], U), writeln(U)).
+:- writeln("Powerset of []").
+:- forall(powerset([], P), writeln(P)).
+:- writeln("Powerset of [a,b,c]").
+:- forall(powerset([a,b,c], P), writeln(P)).
