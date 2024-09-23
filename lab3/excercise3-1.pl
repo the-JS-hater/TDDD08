@@ -11,6 +11,8 @@ run(InitialState, String, FinalState) :-
   execute(InitialState, Ast, FinalState).
 
 
+% DCG =========================
+
 %<pgm> ::= <cmd>
 %| <cmd> ; <pgm>
 %<cmd> ::= skip
@@ -26,78 +28,41 @@ run(InitialState, String, FinalState) :-
 %<term> ::= <id>
 %| <num>
 
-% DCG =========================
-
-program([Statement]) --> statement(Statement).
-
-program([Statement| Rest]) --> statement(Statement), program(Rest).
-
-statement([skip]) --> [skip].
-
-statement --> [id(Var)], [:=], expression(Expression).
-
-statement --> [if], booleanExpression(Expression), [else], program(Statements), [fi].
 
 
+% THIS IS ALL COMPLETLEY UNTESTED !!!!!!!!!!
 
+statements(Statement) --> statement(Statement).
 
+statements(seq(Statement | RestStatements)) --> statement(Statement), [;], statements(RestStatements).
 
+statement(skip) --> [skip].
 
+statement(set(Var, Val)) --> [id(Var)], [:=], expression(Expression).
 
+statement(if(Condition, TrueBranch, FalseBranch)) --> [if], boolExpression(Condition), [then], statement(TrueBranch), [else], statement(FalseBranch), [fi].
 
+statement(while(Condition, Statement)) --> [while], boolExpression(Condition), [do], statement(Statement), [od].
 
+boolExpression(A==B) --> expression(A), [==], expression(B).
 
+boolExpression(A<B) --> expression(A), [<], expression(B).
 
+boolExpression(A>B) --> expression(A), [>], expression(B).
 
+expression(A+B) --> factor(A), [+], expression(B).
 
+expression(A-B) --> factor(A), [-], expression(B).
 
+expression(X) --> factor(X).
 
+factor(A*B) --> term(A), [*], expression(B).
 
+factor(A/B) --> term(A), [/], expression(B).
 
+factor(X) --> term(X).
 
+term(id(Var)) --> [id(Var)].
 
-
-
-% parse/2
-
-parse([Statement | RestStatements], Ast) :-
-  %TODO
-  .
-
-parse([Statement], Ast) :-
-  %TODO
-  .
-
-parseCmd(skip, skip) :-
-  %TODO
-  .
-
-parseCmd([id(Var), :=, Expression], ) :-
-  %TODO
-  % Parse expression, 
-  .
-
-parseCmd([if, Bool, then, Statements, else, Statements2, ]) :-
-  %TODO, like... alot TODO
-  .
-
-parseCmd([while Bool do Statements od]) :-
-  %TODO
-  .
-
-parseBool([Expression1, >, Expression2]) :-
-  %TODO
-  .
-
-parseExpression([Factor, +, Expression]) :-
-  %TODO
-  .
-
-parseFactor([Term, *, Factor]) :-
-  %TODO
-  .
-
-parseTerm([id(X)]) :-
-  %TODO
-  .
+term(num(N)) --> [num(N)].
 
