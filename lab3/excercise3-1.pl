@@ -11,6 +11,9 @@ run(InitialState, String, FinalState) :-
   execute(InitialState, Ast, FinalState).
 
 
+parse(Tokens, Ast) :-
+	phrase(Tokens, [], Ast).
+
 % DCG =========================
 
 %<pgm> ::= <cmd>
@@ -28,9 +31,6 @@ run(InitialState, String, FinalState) :-
 %<term> ::= <id>
 %| <num>
 
-
-
-% THIS IS ALL COMPLETLEY UNTESTED !!!!!!!!!!
 
 statements(Statement) --> statement(Statement).
 
@@ -66,3 +66,4 @@ term(id(Var)) --> [id(Var)].
 
 term(num(N)) --> [num(N)].
 
+:- initialization(forall(run([x=3], "y:=1; z:=0; while x>z do z:=z+1; y:=y*z od", Res), writeln(Res))).
