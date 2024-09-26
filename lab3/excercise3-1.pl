@@ -12,7 +12,7 @@ run(InitialState, String, FinalState) :-
 
 
 parse(Tokens, Ast) :-
-	phrase(Tokens, [], Ast).
+	phrase(statements(Tokens), [], Ast).
 
 % DCG =========================
 
