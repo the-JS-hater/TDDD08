@@ -1,3 +1,5 @@
+% NOTE: just as in ex. 1.1; the recursive premises are always last
+
 % Graph (Terms)
 
 edge(a, b).
@@ -31,9 +33,13 @@ path(A, B, [A | Zs]) :-
   path(X, B, Zs).
 
 % Get the length of a path, given that such exists
+% N = NrOfNosed - 1, because that way you get the 
+% number of edges, instead of number of nodes, in a 
+% given path
 npath(A, B, N) :-
   path(A, B, Z),
-  length(Z, N).
+  length(Z, NumberOfNodes),
+	N is NumberOfNodes - 1.
 
 
 % test queries that run when the script is included in the interpreter
