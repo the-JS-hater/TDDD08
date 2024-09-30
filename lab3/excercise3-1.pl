@@ -5,12 +5,12 @@
 run(InitialState, String, FinalState) :-
 	% scan/2 FROM scanner.pl
   scan(String, TokenVec),
-  parse(TokenVec, Ast),
+  parseProgram(TokenVec, Ast),
 	% execute/3 FROM excercise2-3.pl
   execute(InitialState, Ast, FinalState).
 
-% parse/2
-parse(TokenVec, Ast) :-
+% parseProgram/2
+parseProgram(TokenVec, Ast) :-
 	statements(Ast, TokenVec []).
 
 % DCG =========================
@@ -49,17 +49,17 @@ boolExpression(A<B) --> expression(A), [<], expression(B).
 
 boolExpression(A>B) --> expression(A), [>], expression(B).
 
+expression(X) --> factor(X).
+
 expression(A+B) --> factor(A), [+], expression(B).
 
 expression(A-B) --> factor(A), [-], expression(B).
 
-expression(X) --> factor(X).
+factor(X) --> term(X).
 
 factor(A*B) --> term(A), [*], expression(B).
 
 factor(A/B) --> term(A), [/], expression(B).
-
-factor(X) --> term(X).
 
 term(id(Var)) --> [id(Var)].
 
