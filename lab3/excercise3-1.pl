@@ -2,17 +2,16 @@
 :- consult("scanner.pl").
 
 % run/3
-
-% execute/3 FROM excercise2-3.pl
-% scan/2 FROM scanner.pl
 run(InitialState, String, FinalState) :-
+	% scan/2 FROM scanner.pl
   scan(String, TokenVec),
   parse(TokenVec, Ast),
+	% execute/3 FROM excercise2-3.pl
   execute(InitialState, Ast, FinalState).
 
-
-parse(Tokens, Ast) :-
-	phrase(statements(Tokens), [], Ast).
+% parse/2
+parse(TokenVec, Ast) :-
+	statements(Ast, TokenVec []).
 
 % DCG =========================
 
@@ -66,4 +65,6 @@ term(id(Var)) --> [id(Var)].
 
 term(num(N)) --> [num(N)].
 
+
+% Test cases
 :- initialization(forall(run([x=3], "y:=1; z:=0; while x>z do z:=z+1; y:=y*z od", Res), writeln(Res))).
