@@ -19,7 +19,7 @@
 %| <num>
 
 statements(Statement) --> statement(Statement).
-statements(seq(Statement | RestStatements)) --> statement(Statement), [;], statements(RestStatements).
+statements(seq(Statement, RestStatements)) --> statement(Statement), [;], statements(RestStatements).
 
 statement(skip) --> [skip].
 statement(set(Var, Val)) --> [id(Var)], [:=], expression(Expression).
