@@ -13,6 +13,7 @@ next(State, NextState) :-
 	transition(State, NextState),
 	legalState(NextState).
 
+
 legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
 	0 =< C_l,
 	0 =< M_l,
@@ -71,7 +72,10 @@ transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [lef
 % Check if a given state exists in our list of previously visited states
 % Avoid loops by ensuring we don't enter an already visited state more than once
 notVisited(State, []).
+notVisited(State, [OtherState]) :-
+	dif(State, OtherState).
 notVisited(State, [OtherState | T]) :-
+	dif(State, OtherState),
 	notVisited(State, T).
 
 % Perform depth first search to transition from start state to goal state
@@ -87,4 +91,3 @@ solve :-
     dfs(Start, [], Path),
     writeln(Path).
 
-:- initialization solve.

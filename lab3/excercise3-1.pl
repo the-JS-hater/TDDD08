@@ -4,54 +4,52 @@
 % DCG =========================
 
 %<pgm> ::= <cmd>
-%| <cmd> ; <pgm>
-%<cmd> ::= skip
-%| <id> := <expr>
-%| if <bool> then <pgm> else <pgm> fi
-%| while <bool> do <pgm> od
-%<bool> ::= <expr> > <expr>
-%| ...
-%<expr> ::= <factor> + <expr>
-%| <factor>
-%<factor> ::= <term> * <factor>
-%| <term>
-%<term> ::= <id>
-%| <num>
-
 statements(Statement) --> statement(Statement).
+%| <cmd> ; <pgm>
 statements(seq(Statement, RestStatements)) --> statement(Statement), [;], statements(RestStatements).
 
+%<cmd> ::= skip
 statement(skip) --> [skip].
-statement(set(Var, Val)) --> [id(Var)], [:=], expression(Expression).
-statement(if(Condition, TrueBranch, FalseBranch)) --> [if], boolExpression(Condition), [then], statement(TrueBranch), [else], statement(FalseBranch), [fi].
-statement(while(Condition, Statement)) --> [while], boolExpression(Condition), [do], statement(Statement), [od].
+%| <id> := <expr>
+statement(set(Var, Val)) --> [id(Var)], [:=], expression(Val).
+%| if <bool> then <pgm> else <pgm> fi
+statement(if(Condition, TrueBranch, FalseBranch)) --> [if], boolExpression(Condition), [then], statements(TrueBranch), [else], statements(FalseBranch), [fi].
+%| while <bool> do <pgm> od
+statement(while(Condition, Statements)) --> [while], boolExpression(Condition), [do], statements(Statements), [od].
 
+%<bool> ::= <expr> > <expr>
 boolExpression(A==B) --> expression(A), [==], expression(B).
 boolExpression(A<B) --> expression(A), [<], expression(B).
 boolExpression(A>B) --> expression(A), [>], expression(B).
 
+%<expr> ::= <factor>
 expression(X) --> factor(X).
+%<expr> ::= <factor> + <expr>
 expression(A+B) --> factor(A), [+], expression(B).
 expression(A-B) --> factor(A), [-], expression(B).
 
+%| <term>
 factor(X) --> term(X).
-factor(A*B) --> term(A), [*], expression(B).
-factor(A/B) --> term(A), [/], expression(B).
+%<factor> ::= <term> * <factor>
+factor(A*B) --> term(A), [*], factor(B).
+factor(A/B) --> term(A), [/], factor(B).
 
+%<term> ::= <id>
 term(id(Var)) --> [id(Var)].
+%| <num>
 term(num(N)) --> [num(N)].
 
-% parseProgram/2
-parseProgram(TokenVec, Ast) :-
-	statements(Ast, TokenVec []).
+% parse/2
+parse(TokenVec, Ast) :-
+	statements(Ast, TokenVec, []).
 
 % run/3
 run(InitialState, String, FinalState) :-
 	% scan/2 FROM scanner.pl
   scan(String, TokenVec),
-  parseProgram(TokenVec, Ast),
+  parse(TokenVec, Ast),
 	% execute/3 FROM excercise2-3.pl
   execute(InitialState, Ast, FinalState).
 
-% Test cases
-:- initialization(forall(run([x=3], "y:=1; z:=0; while x>z do z:=z+1; y:=y*z od", Res), writeln(Res))).
+% Test case from the lab series, printed when module is loaded
+:- initialization(forall(run([x=3], "y:=1; z:=0; while x>z do z:= z + 1; y:= y*z od", Res), writeln(Res))).
