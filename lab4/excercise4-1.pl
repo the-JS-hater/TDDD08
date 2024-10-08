@@ -1,10 +1,10 @@
 % State information: C:s and M:s on each side. Boat side. Boat occupants
 % Idea: leftSide(Cannibals_l, Missionaries_l), boat(Side, Cannibals, Missionaries), rightSide(Cannibals_r, Missionaries_r)
 
-% start_state/1
+% startState/1
 startState([leftSide(0, 0), boat(right, 0, 0), rightSide(3, 3)]).
 
-% goal_state/1
+% goalState/1
 goalState([leftSide(3, 3), boat(left, 0, 0), rightSide(0, 0)]).
 
 % next/2
@@ -87,6 +87,22 @@ dfs(State, Path, Visited) :-
 	next(State, NewState),
 	notVisited(NewState, Visited),
 	dfs(NewState, Path,[NewState | Visited]).
+
+% Perform breadth first search
+bfs([[Leaf | Branch] | Branches], Leaf) :-
+	goalState(Leaf).
+
+% TODO: children, expand need to be implemented
+bfs([[Leaf| Branch] | Branches], Goal) :-
+	children(Leaf, Adjacent),
+	expand([Leaf | Branch], Adjacent, Expanded),
+	append(NewBranches, Exanded, NewBranches),
+	bfs(NewBranches, goal).
+
+% TODO: notChildren need to be implemented
+bfs([[Leaf | Branch] | Branches], goal) :-
+	notChildren(Leaf, Leaves),
+	bfs(Branches, goal).
 
 % Initialization sequence
 solve(Solution) :-
