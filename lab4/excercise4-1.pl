@@ -1,5 +1,3 @@
-table dfs(_, first).
-
 % State information: C:s and M:s on each side. Boat side. Boat occupants
 % Idea: leftSide(Cannibals_l, Missionaries_l), boat(Side, Cannibals, Missionaries), rightSide(Cannibals_r, Missionaries_r)
 
@@ -76,21 +74,23 @@ transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [lef
 
 % Check if a given state exists in our list of previously visited states
 % Avoid loops by ensuring we don't enter an already visited state more than once
-%notVisited(State, []).
-%notVisited(State, [OtherState]) :-
-%	dif(State, OtherState).
-%notVisited(State, [OtherState | T]) :-
-%	dif(State, OtherState),
-%	notVisited(State, T).
+notVisited(State, []).
+notVisited(State, [OtherState]) :-
+	dif(State, OtherState).
+	notVisited(State, [OtherState | T]) :-
+	dif(State, OtherState),
+	notVisited(State, T).
 
 % Perform depth first search to transition from start state to goal state
-dfs(State, Path) :- goalState(State).
-dfs(State, Path) :-
+dfs(State, [State | Path], Path) :- goalState(State).
+dfs(State, Path, Visited) :-
 	next(State, NewState),
-	dfs(NewState, [NewState | Path]).
+	notVisited(NewState, Visited),
+	dfs(NewState, Path,[NewState | Visited]).
 
 % Initialization sequence
-solve :-
+solve(Solution) :-
     startState(Start),
-    dfs(Start, []).
+    dfs(Start, Solution, [Start]).
+
 
