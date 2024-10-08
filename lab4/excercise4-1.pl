@@ -57,8 +57,8 @@ transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [le
 
 % Cannibal goes into boat
 transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l2, M_l), boat(left, C_b2, M_b), rightSide(C_r, M_r)]) :-
-	C_l2 is C_l - 1,  
-	C_b2 is C_b + 1. 
+	C_l2 is C_l - 1,
+	C_b2 is C_b + 1.
 % Cannibal leaves boat
 transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l2, M_l), boat(left, C_b2, M_b), rightSide(C_r, M_r)]) :-
 	C_l2 is C_l + 1,
@@ -92,5 +92,3 @@ dfs(State, Path, Visited) :-
 solve(Solution) :-
     startState(Start),
     dfs(Start, Solution, [Start]).
-
-
