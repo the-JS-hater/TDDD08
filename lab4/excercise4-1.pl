@@ -13,8 +13,7 @@ next(State, NextState) :-
 	transition(State, NextState),
 	legalState(NextState).
 
-% TODO: 1 cannibal, 0 missionaries is ILLEGAL. also logic is ugly
-legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
+isState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
 	3 is C_l + C_b + C_r,
 	3 is M_l + M_b + M_r,
 
@@ -27,16 +26,34 @@ legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
 	0 =< C_r,
 	0 =< M_r,
 	0 =< C_b,
-	0 =< M_b,
+	0 =< M_b.
+    
 
-(M_l > 0 -> M_l >= C_l ; 1 > 0),
-(M_r > 0 -> M_r >= C_r ; 1 > 0).
+
+% TODO: 1 cannibal, 0 missionaries is ILLEGAL. also logic is ugly
+legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
+        isState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]),
+	M_r >= C_r,
+	C_l > 0,
+	M_l = 0.
+
+legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
+        isState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]),
+	M_l >= C_l
+	C_r > 0,
+	M_r = 0.
+
+legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
+        isState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]),
+        M_l >= C_l,
+	M_r >= C_r.
 
 
 % Boat can change side, assuming at least one occupant
 transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)]) :-
 	X is C_b + M_b,
 	X > 0.
+
 transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)]) :-
 	X is C_b + M_b,
 	X > 0.
@@ -45,14 +62,17 @@ transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [le
 transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(right, C_b2, M_b), rightSide(C_r2, M_r)]) :-
 	C_r2 is C_r - 1,
 	C_b2 is C_b + 1.
+
 % Cannibal leaves boat
 transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(right, C_b2, M_b), rightSide(C_r2, M_r)]) :-
 	C_r2 is C_r + 1,
 	C_b2 is C_b - 1.
+
 % Missionary goes into boat
 transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(right, C_b, M_b2), rightSide(C_r, M_r2)]) :-
 	M_r2 is M_r - 1,
 	M_b2 is M_b + 1.
+
 % Missionary leaves boat
 transition([leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(right, C_b, M_b2), rightSide(C_r, M_r2)]) :-
 	M_r2 is M_r + 1,
@@ -95,7 +115,7 @@ bfs([[Node | Path] | Paths], [Node | Path]) :-
 
 
 bfs([[Node | Path] | Paths], BestPath) :-
-	findall(NewState, bfsNext(Node, Path, NewState), Neighbors),
+        findall(NewState, bfsNext(Node, Path, NewState), Neighbors),
 	expand([Node | Path], Neighbors, NewPaths),
 	append(Paths, NewPaths, NewestPaths),
 	bfs(NewestPaths, BestPath).
@@ -104,11 +124,13 @@ bfs([[Node | Path] | Paths], BestPath) :-
 bfs([[Node | Path] | Paths], ReturnPath) :-
 	findall(NewState, bfsNext(Node, Path, NewState), Neighbors),
 	Neighbors = [],
-	bfs(Branches, ReturnPath).
+	bfs(Paths, ReturnPath).
 
 
-expand(Path, [], []).
-expand(Path, [Head | Tail], [[Head | Path], Paths]) :-
+%expand(Path, [], []).
+% This way we will not add an extra [] to the end of the list
+expand(Path, [Head], [[Head | Path]]).
+expand(Path, [Head | Tail], [[Head | Path ] | Paths]) :-
 	expand(Path, Tail, Paths).
 
 
