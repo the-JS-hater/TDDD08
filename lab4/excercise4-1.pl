@@ -13,22 +13,25 @@ next(State, NextState) :-
 	transition(State, NextState),
 	legalState(NextState).
 
-
 % TODO: 1 cannibal, 0 missionaries is ILLEGAL. also logic is ugly
 legalState([leftSide(C_l, M_l), boat(_, C_b, M_b), rightSide(C_r, M_r)]) :-
+	3 is C_l + C_b + C_r,
+	3 is M_l + M_b + M_r,
+
+	BoatOccupants is C_b + M_b,
+	BoatOccupants =< 2,
+	BoatOccupants >= 0,
+	
 	0 =< C_l,
 	0 =< M_l,
 	0 =< C_r,
 	0 =< M_r,
 	0 =< C_b,
 	0 =< M_b,
-	M_l >= C_l,
-	M_r >= C_r,
-	3 is C_l + C_b + C_r,
-	3 is M_l + M_b + M_r,
-	BoatOccupants is C_b + M_b,
-	BoatOccupants =< 2,
-	BoatOccupants >= 0.
+
+(M_l > 0 -> M_l >= C_l ; 1 > 0),
+(M_r > 0 -> M_r >= C_r ; 1 > 0).
+
 
 % Boat can change side, assuming at least one occupant
 transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [leftSide(C_l, M_l), boat(right, C_b, M_b), rightSide(C_r, M_r)]) :-
@@ -75,9 +78,7 @@ transition([leftSide(C_l, M_l), boat(left, C_b, M_b), rightSide(C_r, M_r)], [lef
 % Check if a given state exists in our list of previously visited states
 % Avoid loops by ensuring we don't enter an already visited state more than once
 notVisited(State, []).
-notVisited(State, [OtherState]) :-
-	dif(State, OtherState).
-	notVisited(State, [OtherState | T]) :-
+notVisited(State, [OtherState | T]) :-
 	dif(State, OtherState),
 	notVisited(State, T).
 
@@ -89,22 +90,40 @@ dfs(State, Path, Visited) :-
 	dfs(NewState, Path,[NewState | Visited]).
 
 % Perform breadth first search
-bfs([[Leaf | Branch] | Branches], Leaf) :-
-	goalState(Leaf).
+bfs([[Node | Path] | Paths], [Node | Path]) :-
+	goalState(Node).
 
-% TODO: children, expand need to be implemented
-bfs([[Leaf| Branch] | Branches], Goal) :-
-	children(Leaf, Adjacent),
-	expand([Leaf | Branch], Adjacent, Expanded),
-	append(NewBranches, Exanded, NewBranches),
-	bfs(NewBranches, goal).
 
-% TODO: notChildren need to be implemented
-bfs([[Leaf | Branch] | Branches], goal) :-
-	notChildren(Leaf, Leaves),
-	bfs(Branches, goal).
+bfs([[Node | Path] | Paths], BestPath) :-
+	findall(NewState, bfsNext(Node, Path, NewState), Neighbors),
+	expand([Node | Path], Neighbors, NewPaths),
+	append(Paths, NewPaths, NewestPaths),
+	bfs(NewestPaths, BestPath).
+
+
+bfs([[Node | Path] | Paths], ReturnPath) :-
+	findall(NewState, bfsNext(Node, Path, NewState), Neighbors),
+	Neighbors = [],
+	bfs(Branches, ReturnPath).
+
+
+expand(Path, [], []).
+expand(Path, [Head | Tail], [[Head | Path], Paths]) :-
+	expand(Path, Tail, Paths).
+
+
+bfsNext(Node, Path, NextNode) :-
+	transition(Node, NextNode),
+	legalState(NextNode),
+	notVisited(NextNode, Path).
+	
 
 % Initialization sequence
-solve(Solution) :-
+runDFS(Solution) :-
     startState(Start),
     dfs(Start, Solution, [Start]).
+
+
+runBFS(Solution) :-
+    startState(Start),
+    bfs([[Start]], Solution).
