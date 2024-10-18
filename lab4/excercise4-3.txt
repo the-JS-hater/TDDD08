@@ -1,0 +1,14 @@
+
+ These are the results from the time/1 predicate
+
+
+?- time(runDFS(X)).
+% 31,051 inferences, 0.012 CPU in 0.012 seconds (98% CPU, 2652607 Lips)
+X = [[leftSide(3, 3), boat(left, 0, 0), rightSide(0, 0)], [leftSide(3, 3), boat(left, 0, 0), rightSide(0, 0)], [leftSide(2, 3), boat(left, 1, 0), rightSide(0, 0)], [leftSide(1, 3), boat(left, 2, 0), rightSide(0, 0)], [leftSide(1, 3), boat(right, 2, 0), rightSide(0, 0)], [leftSide(1, 3), boat(right, 1, 0), rightSide(..., ...)], [leftSide(1, 3), boat(..., ..., ...)|...], [leftSide(..., ...)|...], [...|...]|...] .
+
+?- time(runBFS(X)).
+% 601,022 inferences, 0.097 CPU in 0.099 seconds (98% CPU, 6195857 Lips)
+X = [[leftSide(3, 3), boat(left, 0, 0), rightSide(0, 0)], [leftSide(2, 3), boat(left, 1, 0), rightSide(0, 0)], [leftSide(2, 2), boat(left, 1, 1), rightSide(0, 0)], [leftSide(2, 2), boat(right, 1, 1), rightSide(0, 0)], [leftSide(2, 2), boat(right, 1, 0), rightSide(0, 1)], [leftSide(2, 2), boat(left, 1, 0), rightSide(..., ...)], [leftSide(1, 2), boat(..., ..., ...)|...], [leftSide(..., ...)|...], [...|...]|...] .
+
+
+As we can see the BFS is significantly slower then the DFS. I suspect that DFS is faster in prolog as it is the type of searching that prolog is designed to do. When we implement BFS we have to implement our own data structure to force prolog to do BFS. On the other hand DFS is the kind of searching that prolog is designed for and as such we can utilize the searching methods already implemented in prolog.  
