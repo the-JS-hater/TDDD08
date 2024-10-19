@@ -1,0 +1,44 @@
+%examplegraph_large.dl: the provided graph contains 2 cliques of size 3.
+
+%The edge relation is symmetric.
+edge(X,Y) :- edge0(X,Y).
+edge(X,Y) :- edge0(Y,X).
+
+%X is a node if there exists an edge from X to another node. This does not work with isolated nodes.
+node(X) :- edge(X,_).
+
+
+%The rest of the graph is specified with a set of edge0/2 facts.
+edge0(a, b).
+edge0(a, c).
+edge0(b, c).
+edge0(c, d).
+edge0(c, e).
+edge0(e, f).
+edge0(d, f).
+edge0(d, h).
+edge0(e, g).
+edge0(f, g).
+
+
+included(X) :- node(X), not excluded(X).
+excluded(X) :- node(X), not included(X).
+equal(X,X) :- node(X).
+three_or_more :-
+included(X),
+included(Y),
+included(Z),
+not equal(X, Y),
+not equal(Y, Z),
+not equal(X, Z).
+
+:- not three_or_more.
+
+% The orignal code without the below constraint generates all solutions and this then includes solutions like:
+% edge0(a,b) edge0(a,c) edge0(b,c) edge0(c,d) edge0(c,e) edge0(e,f) edge0(d,f) edge0(d,h) edge0(e,g) edge0(f,g) edge(a,b) edge(a,c) edge(b,c) edge(c,d) edge(c,e) edge(e,f) edge(d,f) edge(d,h) edge(e,g) edge(f,g) edge(b,a) edge(c,a) edge(c,b) edge(d,c) edge(e,c) edge(f,e) edge(f,d) edge(h,d) edge(g,e) edge(g,f) node(a) node(b) node(c) node(e) node(d) node(f) node(h) node(g) equal(a,a) equal(b,b) equal(c,c) equal(e,e) equal(d,d) equal(f,f) equal(h,h) equal(g,g) included(a) included(b) included(c) included(e) included(d) included(f) included(h) included(g) three_or_more
+% Here all of the nodes of the graph are included, this is of course not a cliuqe, as the graph itself is far from complete.
+
+% Integrity constraint for cliuqes 
+:- not edge(X,Y), included(X), included(Y), not equal(X,Y).
+
+
